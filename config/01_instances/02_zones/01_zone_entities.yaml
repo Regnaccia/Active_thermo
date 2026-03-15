@@ -1,0 +1,42 @@
+input_number:
+  - id: "temp_offset"
+    name: "Temperature Offset"
+    provider: config
+    role: input
+    min: -5
+    max: 5
+    step: 0.1
+    initial: 0
+
+sensor:
+  - id: "temp_raw"
+    name: "Raw Temperature"
+    provider: mqtt
+    role: input
+    unit_of_measurement: "°C"
+    source:
+      topic: "thermo/zone/01/temp_raw/state"
+
+  - id: "temp_corrected"
+    name: "Corrected Temperature"
+    provider: derived
+    role: internal
+    unit_of_measurement: "°C"
+    dependencies:
+      - temp_raw
+      - temp_offset
+    evaluation:
+      kind: math
+      operator: add
+
+binary_sensor:
+  - id: "too_hot"
+    name: "Too Hot"
+    provider: derived
+    role: internal
+    dependencies:
+      - temp_corrected
+    evaluation:
+      kind: threshold
+      operator: ">="
+      target: 24.5

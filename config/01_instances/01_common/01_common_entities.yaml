@@ -1,0 +1,18 @@
+input_select:
+  - id: "common_mode"
+    name: "Common Mode"
+    provider: config
+    role: output
+    options: ["off", "heat", "cool"]
+    initial: "off"
+
+binary_sensor:
+  - id: "general_cool_enable"
+    name: "General Cool Enable"
+    provider: derived
+    role: internal
+    dependencies:
+      - common_mode
+    evaluation:
+      kind: equals
+      target: "cool"
