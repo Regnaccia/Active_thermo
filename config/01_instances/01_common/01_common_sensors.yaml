@@ -1,0 +1,4 @@
+select:
+  - id: "common_mode"
+    name: "common mode"
+    type: "output"

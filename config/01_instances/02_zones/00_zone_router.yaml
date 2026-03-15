@@ -1,0 +1,2 @@
+sensors:
+  - "config\\01_instances\\02_zones\\01_zone_senors.yaml"

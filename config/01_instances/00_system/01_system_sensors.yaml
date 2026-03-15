@@ -1,0 +1,14 @@
+binary_sensor:
+  - id:     "brain_online"
+    name:   "PY Brain Brain Online"
+    type:   "output"
+
+  - id:     "brain_online test"
+    name:   "PY Brain Brain Online"
+    type:   "output"
+
+sensor:
+  - id:     "brain_online 2"
+    name:   "PY Brain Brain Online"
+    type:   "output"
+ 
