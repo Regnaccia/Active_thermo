@@ -1,151 +1,91 @@
-# entity_config_assembler
+# ActiveThermo
 
-`entity_config_assembler` è il modulo 1 della nuova architettura. Il suo perimetro è intenzionalmente ristretto:
+ActiveThermo è un motore software per il controllo intelligente di sistemi HVAC domestici e multi‑zona.
 
-- caricare i file YAML
-- validare la struttura con Pydantic
-- assemblare le istanze inizializzate
-- applicare la naming policy agli `exported_id`
-- risolvere e normalizzare le dipendenze in `full_id`
-- produrre un unico `AssembledConfiguration`
+Il progetto nasce per realizzare un sistema di gestione termica avanzato che integri:
 
-Non fa:
+- riscaldamento
+- raffrescamento
+- ventilazione
+- automazione domestica
+- sensori distribuiti
 
-- registry building
-- dependency graph runtime
-- evaluation engine
-- MQTT transport runtime
+Il sistema è progettato per funzionare in integrazione con:
 
-## Motivazione del refactoring finale
+- MQTT
+- Home Assistant
+- dispositivi hardware custom
+- sistemi HVAC commerciali
 
-Nel repo precedente il modulo era ancora nominato in funzione di ActiveThermo e aveva due criticità principali:
+---
 
-1. il controllo di unicità globale controllava i `full_id` ma riportava un errore riferito agli `exported_id`
-2. le `dependencies` restavano in forma raw senza una vera risoluzione canonica
+# Architettura del progetto
 
-Questa versione chiude il modulo come componente generico e riusabile, pronto da passare a un futuro modulo `registry_builder`.
+Il sistema è composto da due livelli principali.
 
-## Regole congelate
+## Configuration Layer
 
-### 1. Namespace delle istanze
+Responsabile della lettura e validazione della configurazione del sistema.
 
-Ogni `instance_id` definisce un namespace globale unico.
+Modulo principale:
 
-- `instance_id` duplicati: **non ammessi**
-- `full_id = "{instance_id}.{local_id}"`
+entity_config_assembler
 
-Questo elimina a monte collisioni strutturali nel sistema assemblato.
+Questo modulo:
 
-### 2. ID delle entità
+- carica i file YAML
+- valida lo schema
+- normalizza le entità
+- risolve le dipendenze
+- costruisce la configurazione finale
 
-Nei file di entità l'id è sempre **locale alla propria istanza**.
+Output:
 
-Esempi validi:
+AssembledConfiguration
 
-- `zone_01.temp_raw`
-- `zone_02.temp_raw`
-- `common.common_sensor_a`
+---
 
-Quindi due zone possono condividere lo stesso file sensori con `id: temp_raw`, perché il namespace viene fornito da `parent` durante l'assembly.
+## Runtime Layer (in sviluppo)
 
-### 3. Exported ID
+Responsabile della logica operativa del sistema.
 
-L'`exported_id` è derivato dalla naming policy.
+Componenti previsti:
 
-Policy supportate:
+- Entity Registry
+- State Engine
+- Dependency Propagation
+- MQTT Integration
+- Home Assistant Bridge
 
-- `prefix_parent` → consigliata
-- `keep_local_id` → ammessa ma più fragile
+---
 
-Con `prefix_parent`:
+# Struttura del progetto
 
-- `zone_01.temp_raw` → `zone_01_temp_raw`
-- `zone_02.temp_raw` → `zone_02_temp_raw`
+Active_thermo/
 
-### 4. Dependencies
-
-Formati ammessi nei manifest:
-
-- `temp_raw` → riferimento locale alla stessa istanza
-- `common.common_sensor_a` → riferimento assoluto
-- `zone_02.temp_raw` → riferimento assoluto cross-instance
-
-Formato **non ammesso**:
-
-- stringhe con più di un punto, per esempio `a.b.c`
-
-Output del modulo:
-
-- tutte le `dependencies` vengono normalizzate in `full_id`
-
-Esempio:
-
-- dentro `zone_01`, `temp_raw` diventa `zone_01.temp_raw`
-
-### 5. Primitive vs derived
-
-Le entità `derived` sono ammesse solo per:
-
-- `sensor`
-- `binary_sensor`
-
-Regole:
-
-- `derived` richiede almeno una dependency
-- `derived` richiede `evaluation`
-- `derived` non può avere `source`
-- `mqtt` richiede `source.topic`
-- i provider diversi da `mqtt` non possono definire `source`
-
-## Output
-
-L'output finale è un `AssembledConfiguration` con:
-
-- `system`
-- `mqtt`
-- `instances`
-- `entities`
-- `naming_policy`
-
-Ogni `BuiltEntity` contiene sia:
-
-- `raw_dependencies` → la forma dichiarata nei file YAML
-- `dependencies` → la forma canonica risolta in `full_id`
-
-## Struttura del pacchetto
-
-```text
+config/
+system/
 entity_config_assembler/
-  assembler/
-    configuration_assembler.py
-    instance_assembler.py
-    system_assembler.py
-    validators.py
-  entities/
-  loaders/
-  normalizers/
-  utils/
-  tests/
-main.py
-```
+docs/
+tests/
 
-## Uso CLI
+---
 
-```bash
-python main.py \
-  --base-path . \
-  --system-file config/00_system/00_system.yaml \
-  --naming-mode prefix_parent \
-  --format json
-```
+# Stato del progetto
 
-## Confine architetturale finale
+| Modulo | Stato |
+|------|------|
+entity_config_assembler | completato
+entity_registry | in sviluppo
+runtime_engine | pianificato
 
-Pipeline completa prevista:
+---
 
-1. `entity_config_assembler`
-2. `registry_builder`
-3. runtime / engine
-4. MQTT / transport
+# Obiettivi del progetto
 
-Questa separazione consente di riusare modulo 1 anche per applicazioni future diverse da ActiveThermo, per esempio una futura runtime `PassiveThermo`.
+ActiveThermo punta a diventare una piattaforma modulare per:
+
+- controllo HVAC multi‑zona
+- building automation
+- ottimizzazione energetica
+- integrazione domotica avanzata
