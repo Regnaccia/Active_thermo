@@ -1,0 +1,256 @@
+{
+  "system": {
+    "name": "Casa Regna",
+    "instances": [
+      "system",
+      "common",
+      "zone_01"
+    ],
+    "instances_count": 3
+  },
+  "mqtt": {
+    "broker": "192.168.0.7",
+    "port": 1883,
+    "username": "activethermo",
+    "password": "CHIAVE_FORTE"
+  },
+  "instances": [
+    {
+      "id": "system",
+      "name": "System",
+      "type": "system",
+      "info": {
+        "router": "config/01_instances/00_system/00_system_router.yaml",
+        "entities": [
+          "system_brain_uptime",
+          "system_brain_online",
+          "system_brain_online_derived"
+        ],
+        "entities_count": 3
+      }
+    },
+    {
+      "id": "common",
+      "name": "Common",
+      "type": "common",
+      "info": {
+        "router": "config/01_instances/01_common/00_common_router.yaml",
+        "entities": [
+          "common_temp_corrected",
+          "common_general_cool_enable",
+          "common_common_mode"
+        ],
+        "entities_count": 3
+      }
+    },
+    {
+      "id": "zone_01",
+      "name": "Test",
+      "type": "zone",
+      "info": {
+        "router": "config/01_instances/02_zones/00_zone_router.yaml",
+        "entities": [
+          "zone_01_temp_raw",
+          "zone_01_temp_corrected",
+          "zone_01_too_hot",
+          "zone_01_temp_offset"
+        ],
+        "entities_count": 4
+      }
+    }
+  ],
+  "entities": [
+    {
+      "id": "brain_uptime",
+      "full_id": "system.brain_uptime",
+      "exported_id": "system_brain_uptime",
+      "name": "PY Brain Uptime",
+      "parent": "system",
+      "domain": "sensor",
+      "provider": "mqtt",
+      "role": "input",
+      "expose": true,
+      "source": {
+        "topic": "thermo/system/brain_uptime/state"
+      },
+      "dependencies": [],
+      "raw_dependencies": [],
+      "evaluation": null
+    },
+    {
+      "id": "brain_online",
+      "full_id": "system.brain_online",
+      "exported_id": "system_brain_online",
+      "name": "PY Brain Online",
+      "parent": "system",
+      "domain": "binary_sensor",
+      "provider": "mqtt",
+      "role": "input",
+      "expose": true,
+      "source": {
+        "topic": "thermo/system/brain_online/state"
+      },
+      "dependencies": [],
+      "raw_dependencies": [],
+      "evaluation": null
+    },
+    {
+      "id": "brain_online_derived",
+      "full_id": "system.brain_online_derived",
+      "exported_id": "system_brain_online_derived",
+      "name": "PY Brain Online Derived",
+      "parent": "system",
+      "domain": "binary_sensor",
+      "provider": "derived",
+      "role": "internal",
+      "expose": true,
+      "source": null,
+      "dependencies": [
+        "system.brain_online"
+      ],
+      "raw_dependencies": [
+        "brain_online"
+      ],
+      "evaluation": {
+        "kind": "not"
+      }
+    },
+    {
+      "id": "temp_corrected",
+      "full_id": "common.temp_corrected",
+      "exported_id": "common_temp_corrected",
+      "name": "Corrected Temperature",
+      "parent": "common",
+      "domain": "sensor",
+      "provider": "mqtt",
+      "role": "internal",
+      "expose": true,
+      "source": {
+        "topic": "thermo/zone/01/temp_raw/state"
+      },
+      "dependencies": [],
+      "raw_dependencies": [],
+      "evaluation": null
+    },
+    {
+      "id": "general_cool_enable",
+      "full_id": "common.general_cool_enable",
+      "exported_id": "common_general_cool_enable",
+      "name": "General Cool Enable",
+      "parent": "common",
+      "domain": "binary_sensor",
+      "provider": "derived",
+      "role": "internal",
+      "expose": true,
+      "source": null,
+      "dependencies": [
+        "common.common_mode"
+      ],
+      "raw_dependencies": [
+        "common_mode"
+      ],
+      "evaluation": {
+        "kind": "equals",
+        "target": "cool"
+      }
+    },
+    {
+      "id": "common_mode",
+      "full_id": "common.common_mode",
+      "exported_id": "common_common_mode",
+      "name": "Common Mode",
+      "parent": "common",
+      "domain": "input_select",
+      "provider": "config",
+      "role": "output",
+      "expose": true,
+      "source": null,
+      "dependencies": [],
+      "raw_dependencies": [],
+      "evaluation": null
+    },
+    {
+      "id": "temp_raw",
+      "full_id": "zone_01.temp_raw",
+      "exported_id": "zone_01_temp_raw",
+      "name": "Raw Temperature",
+      "parent": "zone_01",
+      "domain": "sensor",
+      "provider": "mqtt",
+      "role": "input",
+      "expose": true,
+      "source": {
+        "topic": "thermo/zone/01/temp_raw/state"
+      },
+      "dependencies": [],
+      "raw_dependencies": [],
+      "evaluation": null
+    },
+    {
+      "id": "temp_corrected",
+      "full_id": "zone_01.temp_corrected",
+      "exported_id": "zone_01_temp_corrected",
+      "name": "Corrected Temperature",
+      "parent": "zone_01",
+      "domain": "sensor",
+      "provider": "derived",
+      "role": "internal",
+      "expose": true,
+      "source": null,
+      "dependencies": [
+        "zone_01.temp_raw",
+        "zone_01.temp_offset"
+      ],
+      "raw_dependencies": [
+        "temp_raw",
+        "temp_offset"
+      ],
+      "evaluation": {
+        "kind": "math",
+        "operator": "add"
+      }
+    },
+    {
+      "id": "too_hot",
+      "full_id": "zone_01.too_hot",
+      "exported_id": "zone_01_too_hot",
+      "name": "Too Hot",
+      "parent": "zone_01",
+      "domain": "binary_sensor",
+      "provider": "derived",
+      "role": "internal",
+      "expose": true,
+      "source": null,
+      "dependencies": [
+        "common.temp_corrected"
+      ],
+      "raw_dependencies": [
+        "common.temp_corrected"
+      ],
+      "evaluation": {
+        "kind": "threshold",
+        "operator": ">=",
+        "target": 24.5
+      }
+    },
+    {
+      "id": "temp_offset",
+      "full_id": "zone_01.temp_offset",
+      "exported_id": "zone_01_temp_offset",
+      "name": "Temperature Offset",
+      "parent": "zone_01",
+      "domain": "input_number",
+      "provider": "config",
+      "role": "input",
+      "expose": true,
+      "source": null,
+      "dependencies": [],
+      "raw_dependencies": [],
+      "evaluation": null
+    }
+  ],
+  "naming_policy": {
+    "mode": "prefix_parent",
+    "separator": "_"
+  }
+}

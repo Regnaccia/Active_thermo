@@ -11,7 +11,7 @@ from entity_config_assembler.assembler.configuration_assembler import Configurat
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="entity_config_assembler")
-    parser.add_argument("--base-path", default=str(Path(__file__).parent.parent), help="Project base path")
+    parser.add_argument("--base-path", default=str(Path(__file__).parent), help="Project base path")
     parser.add_argument("--system-file", default="config/00_system/00_system.yaml", help="System YAML path")
     parser.add_argument(
         "--naming-mode",
@@ -21,7 +21,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--separator", default="_", help="Separator used by naming policy")
     parser.add_argument("--format", default="json", choices=["json", "yaml"], help="Output format")
-    parser.add_argument("--output", default="", help="Optional output file path")
+    parser.add_argument("--output", default="config.json", help="Optional output file path")
     parser.add_argument("--log-mode", default="verbose", choices=["silent", "normal", "verbose"])
     return parser
 

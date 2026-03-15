@@ -16,3 +16,13 @@ binary_sensor:
     evaluation:
       kind: equals
       target: "cool"
+
+sensor:
+  - id: "temp_corrected"
+    name: "Corrected Temperature"
+    provider: mqtt
+    role: internal
+    unit_of_measurement: "°C"
+    source:
+      topic: "thermo/zone/01/temp_raw/state"
+

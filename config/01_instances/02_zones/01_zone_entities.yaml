@@ -35,7 +35,7 @@ binary_sensor:
     provider: derived
     role: internal
     dependencies:
-      - temp_corrected
+      - common.temp_corrected
     evaluation:
       kind: threshold
       operator: ">="
