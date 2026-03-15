@@ -1,0 +1,25 @@
+binary_sensor:
+  - id: "brain_online"
+    name: "PY Brain Online"
+    provider: mqtt
+    role: input
+    source:
+      topic: "thermo/system/brain_online/state"
+
+  - id: "brain_online_derived"
+    name: "PY Brain Online Derived"
+    provider: derived
+    role: internal
+    dependencies:
+      - brain_online
+    evaluation:
+      kind: not
+
+sensor:
+  - id: "brain_uptime"
+    name: "PY Brain Uptime"
+    provider: mqtt
+    role: input
+    unit_of_measurement: "s"
+    source:
+      topic: "thermo/system/brain_uptime/state"

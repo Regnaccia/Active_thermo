@@ -1,19 +1,15 @@
-- id:         "system"
-  name:       "System"
-  type:       "system"
-  router:     "config\\01_instances\\00_system\\00_system_router.yaml"
+- id: "system"
+  name: "System"
+  type: "system"
+  router: "config/01_instances/00_system/00_system_router.yaml"
 
-- id:         "common"
-  name:       "Common"
-  type:       "common"
-  router:     "config\\01_instances\\01_common\\00_common_router.yaml"
+- id: "common"
+  name: "Common"
+  type: "common"
+  router: "config/01_instances/01_common/00_common_router.yaml"
 
-- id:         "zone_01"
-  name:       "Test"
-  type:       "zone"
-  router:     "config\\01_instances\\02_zones\\00_zone_router.yaml"
+- id: "zone_01"
+  name: "Test"
+  type: "zone"
+  router: "config/01_instances/02_zones/00_zone_router.yaml"
   initialize: true
-
-
-  
-

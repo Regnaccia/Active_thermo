@@ -1,3 +1,3 @@
-system_name:        "Casa Regna" 
-instances_package:  "config\\01_instances\\00_instances_package.yaml" 
-mqtt_config:        "config\\00_system\\10_mqtt_config.yaml"
+system_name: "Casa Regna"
+instances_package: "config/01_instances/00_instances_package.yaml"
+mqtt_config: "config/00_system/10_mqtt_config.yaml"
