@@ -26,8 +26,8 @@ sensor:
       - temp_raw
       - temp_offset
     evaluation:
-      kind: math
-      operator: add
+      kind: add
+
 
 binary_sensor:
   - id: "too_hot"
@@ -37,6 +37,5 @@ binary_sensor:
     dependencies:
       - common.temp_corrected
     evaluation:
-      kind: threshold
-      operator: ">="
+      kind: greater_or_equal
       target: 24.5

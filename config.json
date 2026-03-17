@@ -112,7 +112,8 @@
         "brain_online"
       ],
       "evaluation": {
-        "kind": "not"
+        "kind": "not",
+        "engine": "base"
       }
     },
     {
@@ -151,6 +152,7 @@
       ],
       "evaluation": {
         "kind": "equals",
+        "engine": "base",
         "target": "cool"
       }
     },
@@ -206,8 +208,8 @@
         "temp_offset"
       ],
       "evaluation": {
-        "kind": "math",
-        "operator": "add"
+        "kind": "add",
+        "engine": "base"
       }
     },
     {
@@ -228,8 +230,8 @@
         "common.temp_corrected"
       ],
       "evaluation": {
-        "kind": "threshold",
-        "operator": ">=",
+        "kind": "greater_or_equal",
+        "engine": "base",
         "target": 24.5
       }
     },
