@@ -2,6 +2,7 @@ from entity_config_assembler.entities.assembly import *
 from entity_config_assembler.entities.base import *
 from entity_config_assembler.entities.domain_entities import *
 from entity_config_assembler.entities.enums import *
+from entity_config_assembler.entities.evaluation import *
 from entity_config_assembler.entities.manifest import *
 from entity_config_assembler.entities.source import *
 from entity_config_assembler.entities.strict import *

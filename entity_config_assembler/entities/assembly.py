@@ -93,4 +93,5 @@ class AssembledConfiguration(StrictModel):
                     owners[entity.exported_id].append(entity.full_id)
             details = {key: owners[key] for key in duplicate_exported_ids}
             raise ValueError(f"Duplicate exported entity ids detected: {details}")
+
         return self

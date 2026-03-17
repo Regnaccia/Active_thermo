@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from typing import Any
-
 from pydantic import Field, field_validator, model_validator
 
 from entity_config_assembler.entities.enums import DERIVED_ALLOWED_DOMAINS, Provider, Role
+from entity_config_assembler.entities.evaluation import EvaluationConfig, parse_evaluation_config
 from entity_config_assembler.entities.source import SourceConfig
 from entity_config_assembler.entities.strict import StrictModel
 
@@ -13,17 +12,20 @@ class BaseEntity(StrictModel):
     id: str = Field(min_length=1)
     name: str = Field(min_length=1)
     parent: str = Field(min_length=1)
+
     provider: Provider
     role: Role
+
     expose: bool = True
     icon: str | None = None
     unit_of_measurement: str | None = None
     device_class: str | None = None
     entity_category: str | None = None
     enabled_by_default: bool = True
+
     source: SourceConfig | None = None
     dependencies: list[str] = Field(default_factory=list)
-    evaluation: Any | None = None
+    evaluation: EvaluationConfig | None = None
 
     @field_validator("id", "parent")
     @classmethod
@@ -37,6 +39,7 @@ class BaseEntity(StrictModel):
     def validate_dependencies_not_blank(cls, values: list[str]) -> list[str]:
         seen: set[str] = set()
         normalized: list[str] = []
+
         for value in values:
             item = value.strip()
             if not item:
@@ -45,7 +48,13 @@ class BaseEntity(StrictModel):
                 raise ValueError(f"Duplicate dependency '{item}' detected.")
             seen.add(item)
             normalized.append(item)
+
         return normalized
+
+    @field_validator("evaluation", mode="before")
+    @classmethod
+    def validate_evaluation_structure(cls, value):
+        return parse_evaluation_config(value)
 
     @property
     def is_derived(self) -> bool:
@@ -81,9 +90,11 @@ class BaseEntity(StrictModel):
                 raise ValueError("Primitive entity cannot define dependencies.")
             if has_eval:
                 raise ValueError("Primitive entity cannot define evaluation.")
-            if self.provider == "mqtt" and self.source is None:
-                raise ValueError("MQTT entity requires source.topic.")
-            if self.provider != "mqtt" and has_source:
-                raise ValueError("Source is supported only for provider='mqtt'.")
+
+        if self.provider == "mqtt" and self.source is None:
+            raise ValueError("MQTT entity requires source.topic.")
+
+        if self.provider != "mqtt" and has_source:
+            raise ValueError("Source is supported only for provider='mqtt'.")
 
         return self

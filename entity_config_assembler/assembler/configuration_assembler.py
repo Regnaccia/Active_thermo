@@ -32,6 +32,7 @@ class ConfigurationAssembler:
 
     def assemble(self) -> AssembledConfiguration:
         log(self.log_mode, indent("⚙️ Assembling configuration", 0), level=0)
+
         system = SystemAssembler(
             base_path=self.base_path,
             system_file=self.system_file,
@@ -39,6 +40,7 @@ class ConfigurationAssembler:
         ).assemble()
 
         initialized_instances = [instance for instance in system.instances if instance.initialize]
+
         instance_assemblies = [
             InstanceAssembler(
                 base_path=self.base_path,
@@ -60,9 +62,11 @@ class ConfigurationAssembler:
 
         for instance in instance_assemblies:
             instance_exported_ids: list[str] = []
+
             for entity in instance.entities.iter_entities():
                 exported_id = naming.exported_id_for(entity)
                 resolved_dependencies = self._resolve_dependencies(entity_index=entity_index, entity=entity)
+
                 built_entities.append(
                     BuiltEntity(
                         id=entity.id,
@@ -77,7 +81,11 @@ class ConfigurationAssembler:
                         source=entity.source,
                         dependencies=resolved_dependencies,
                         raw_dependencies=list(entity.dependencies),
-                        evaluation=entity.evaluation if isinstance(entity.evaluation, dict) else entity.evaluation,
+                        evaluation=(
+                            entity.evaluation.model_dump(mode="json")
+                            if entity.evaluation is not None
+                            else None
+                        ),
                     )
                 )
                 instance_exported_ids.append(exported_id)
@@ -127,13 +135,17 @@ class ConfigurationAssembler:
     def _resolve_dependency_full_id(*, dependency: str, parent: str) -> str:
         ref = dependency.strip()
         parts = ref.split(".")
+
         if len(parts) == 1:
             return f"{parent}.{parts[0]}"
+
         if len(parts) == 2:
             instance_id, local_id = parts
             if not instance_id or not local_id:
                 raise ValueError(f"Invalid dependency reference '{dependency}'.")
             return f"{instance_id}.{local_id}"
+
         raise ValueError(
-            f"Invalid dependency reference '{dependency}'. Supported formats are 'local_id' or 'instance_id.local_id'."
+            f"Invalid dependency reference '{dependency}'. "
+            "Supported formats are 'local_id' or 'instance_id.local_id'."
         )
