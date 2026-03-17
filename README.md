@@ -1,4 +1,4 @@
-# ActiveThermo
+# ActiveThermo v2
 
 ActiveThermo è un motore software per il controllo intelligente di sistemi HVAC domestici e multi‑zona.
 
